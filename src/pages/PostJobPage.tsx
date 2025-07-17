@@ -8,9 +8,8 @@ import {
   Chip,
   Grid
 } from '@mui/material';
-import { useJobStore } from '../stores/jobStore';
+import { useJobStore } from '../store/jobStore';
 
-// Define proper Job type with all required fields
 type JobType = 'full-time' | 'part-time' | 'contract' | 'remote';
 type ExperienceLevel = 'entry-level' | 'mid-level' | 'senior';
 type SalaryCurrency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD';
@@ -36,7 +35,7 @@ interface Job {
 }
 
 export default function PostJobPage() {
-  // Initialize with all required fields
+
   const [job, setJob] = useState<Omit<Job, 'id' | 'postedAt' | 'status' | 'applicationDeadline'>>({
     title: '',
     company: '',
@@ -132,7 +131,7 @@ export default function PostJobPage() {
           />
         </Grid>
 
-        {/* Location */}
+
         <Grid>
           <TextField
             fullWidth
@@ -143,7 +142,7 @@ export default function PostJobPage() {
           />
         </Grid>
 
-        {/* Remote */}
+        
         <Grid>
           <TextField
             select
