@@ -5,6 +5,7 @@ import {
   Button,
   InputAdornment,
   useTheme,
+  useMediaQuery,
   Paper
 } from '@mui/material';
 import { Search, WorkOutline, Place } from '@mui/icons-material';
@@ -12,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 
 export const SearchBar: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -25,9 +28,11 @@ export const SearchBar: React.FC = () => {
       onSubmit={handleSearch}
       elevation={3}
       sx={{
-        p: 1,
+        p: isMobile ? 2 : 1,
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: isMobile ? 'column' : 'row',
+        alignItems: isMobile ? 'stretch' : 'center',
+        gap: isMobile ? 2 : 1,
         width: '100%',
         maxWidth: 800,
         mx: 'auto',
@@ -36,6 +41,7 @@ export const SearchBar: React.FC = () => {
     >
       <TextField
         fullWidth
+        size={isMobile ? 'small' : 'medium'}
         placeholder="Job title, keywords, or company"
         InputProps={{
           startAdornment: (
@@ -46,11 +52,11 @@ export const SearchBar: React.FC = () => {
           sx: { border: 'none', '& fieldset': { border: 'none' } }
         }}
         variant="outlined"
-        size="medium"
       />
-      <Box sx={{ width: 1, mx: 1 }} />
+      <Box sx={{ width: isMobile ? '100%' : 1 }} />
       <TextField
         fullWidth
+        size={isMobile ? 'small' : 'medium'}
         placeholder="Location"
         InputProps={{
           startAdornment: (
@@ -61,15 +67,14 @@ export const SearchBar: React.FC = () => {
           sx: { border: 'none', '& fieldset': { border: 'none' } }
         }}
         variant="outlined"
-        size="medium"
       />
       <Button
         type="submit"
         variant="contained"
         color="primary"
-        size="large"
+        size={isMobile ? 'medium' : 'large'}
         startIcon={<Search />}
-        sx={{ ml: 1, px: 4, py: 1.5 }}
+        sx={{ px: isMobile ? 2 : 4, py: 1.5 }}
       >
         Search
       </Button>

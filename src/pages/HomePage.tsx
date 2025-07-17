@@ -12,19 +12,40 @@ import {
   Chip
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import JobCard  from '../components/JobCard';
+import JobCard from '../components/JobCard';
 import { useJobStore } from '../store/jobStore';
 import { SearchBar } from '../components/SearchBar';
-import type { Job } from '../types/types';
+
 
 const HomePage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
-  const { filteredJobs } = useJobStore();
+  const { 
+    filteredJobs, 
+    savedJobs, 
+    saveJob, 
+    unsaveJob, 
+    applyToJob 
+  } = useJobStore();
 
-  // Featured jobs (could be from API or filtered differently)
-  const featuredJobs: Job[] = filteredJobs.slice(0, 4);
+  // Create properly typed featured jobs
+  const featuredJobs = filteredJobs.slice(0, 4).map(job => ({
+    ...job,
+    // Ensure all required Job properties are present
+    companyId: job.companyId || '',
+    remote: job.remote || false,
+    salaryCurrency: job.salaryCurrency || 'USD',
+    salaryPeriod: job.salaryPeriod || 'year',
+    responsibilities: job.responsibilities || [],
+    benefits: job.benefits || [],
+    skills: job.skills || [],
+    experienceLevel: job.experienceLevel || 'mid',
+    educationLevel: job.educationLevel || 'bachelor',
+    applicantsCount: job.applicantsCount || 0,
+    viewsCount: job.viewsCount || 0
+  }));
+
   const popularCategories = [
     'Frontend',
     'Backend',
@@ -94,10 +115,17 @@ const HomePage: React.FC = () => {
           </Button>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} columns={{ xs: 4, sm: 8, md: 12 }}>
           {featuredJobs.map((job) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={job.id}>
-              <JobCard job={job} variant="compact" />
+            <Grid key={job.id}>
+              <JobCard 
+                job={job}
+                variant="featured"
+                isSaved={savedJobs.some(j => j.id === job.id)}
+                onSave={() => saveJob(job.id)}
+                onUnsave={() => unsaveJob(job.id)}
+                onApply={() => applyToJob(job.id)}
+              />
             </Grid>
           ))}
         </Grid>
@@ -132,7 +160,7 @@ const HomePage: React.FC = () => {
                 icon: '💼'
               }
             ].map((item, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
+              <Grid   key={index}>
                 <Paper elevation={0} sx={{ p: 3, height: '100%', textAlign: 'center' }}>
                   <Typography variant="h3" sx={{ mb: 2 }}>
                     {item.icon}

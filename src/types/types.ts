@@ -18,8 +18,9 @@ export interface AuthResponse {
 
 // Job Types
 export type JobType = 'full-time' | 'part-time' | 'contract' | 'internship' | 'remote';
-
 export type JobStatus = 'active' | 'paused' | 'closed' | 'draft';
+export type ExperienceLevel = 'entry-level' | 'mid-level' | 'senior';
+export type SalaryCurrency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD';
 
 export interface Job {
   id: string;
@@ -45,6 +46,7 @@ export interface Job {
   educationLevel?: 'high-school' | 'associate' | 'bachelor' | 'master' | 'phd';
   applicantsCount?: number;
   viewsCount?: number;
+
 }
 
 export interface JobFilterParams {
@@ -82,6 +84,12 @@ export interface Application {
   resumeUrl?: string;
   notes?: string;
   feedback?: string;
+  candidate: {
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  job: Job;
 }
 
 // Company Types

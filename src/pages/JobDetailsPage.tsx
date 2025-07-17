@@ -1,68 +1,61 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React from 'react';
 import {
-  Container,
   Box,
-  Typography,
   Button,
+  Container,
+  Grid,
+  Typography,
   Paper,
   Chip,
   Divider,
   Avatar,
-  IconButton,
-  Grid,
-} from '@mui/material'
+  IconButton
+} from '@mui/material';
 import {
-  Bookmark as BookmarkIcon,
-  BookmarkBorder as BookmarkBorderIcon,
+  Bookmark,
+  BookmarkBorder,
   Share,
   LocationOn,
   Work,
   AttachMoney,
   Schedule,
-  ArrowBack,
-} from '@mui/icons-material'
-import { useJobStore } from '../store/jobStore'
-import { fetchJobById } from '../api/jobService'
+  ArrowBack
+} from '@mui/icons-material';
+import { Link, useParams } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
+import { useJobStore } from '../store/jobStore';
+import { fetchJobById } from '../api/JobService';
+import type { Job } from '../types/types';
 
 const JobDetailsPage: React.FC = () => {
-  const { id } = useParams()
-  const { savedJobs, saveJob, unsaveJob, applyToJob } = useJobStore()
-  const [job, setJob] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams();
+  // const navigate = useNavigate();
+  const { savedJobs, saveJob, unsaveJob, applyToJob } = useJobStore();
+  const [job, setJob] = React.useState<Job | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const isSaved = savedJobs.some((j) => j.id === id)
-
-  useEffect(() => {
+  React.useEffect(() => {
     const loadJob = async () => {
       try {
-        setLoading(true)
-        const jobData = await fetchJobById(id!)
-        setJob(jobData)
+        setLoading(true);
+        const jobData = await fetchJobById(id!);
+        setJob(jobData);
       } catch (err) {
-        setError('Failed to load job details')
+        setError('Failed to load job details');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    loadJob()
-  }, [id])
-
-  const handleSaveClick = () => {
-    if (isSaved) {
-      unsaveJob(id!)
-    } else {
-      saveJob(id!)
-    }
-  }
+    };
+    loadJob();
+  }, [id]);
 
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Typography>Loading...</Typography>
       </Container>
-    )
+    );
   }
 
   if (error || !job) {
@@ -73,8 +66,10 @@ const JobDetailsPage: React.FC = () => {
           Back to Jobs
         </Button>
       </Container>
-    )
+    );
   }
+
+  const isSaved = savedJobs.some(j => j.id === job.id);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -142,10 +137,10 @@ const JobDetailsPage: React.FC = () => {
           </Button>
           <IconButton
             size="large"
-            onClick={handleSaveClick}
+            onClick={() => isSaved ? unsaveJob(job.id) : saveJob(job.id)}
             color={isSaved ? 'primary' : 'default'}
           >
-            {isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+            {isSaved ? <Bookmark /> : <BookmarkBorder />}
           </IconButton>
           <IconButton size="large">
             <Share />
@@ -154,8 +149,8 @@ const JobDetailsPage: React.FC = () => {
 
         <Divider sx={{ my: 4 }} />
 
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={8}>
+        <Grid container spacing={4} columns={{ xs: 12, md: 12 }}>
+          <Grid >
             <Box mb={4}>
               <Typography variant="h5" gutterBottom>
                 Job Description
@@ -165,25 +160,27 @@ const JobDetailsPage: React.FC = () => {
               </Typography>
             </Box>
 
-            <Box mb={4}>
-              <Typography variant="h5" gutterBottom>
-                Responsibilities
-              </Typography>
-              <ul>
-                {job.responsibilities?.map((item: string, index: number) => (
-                  <li key={index}>
-                    <Typography variant="body1">{item}</Typography>
-                  </li>
-                ))}
-              </ul>
-            </Box>
+            {job.responsibilities?.length > 0 && (
+              <Box mb={4}>
+                <Typography variant="h5" gutterBottom>
+                  Responsibilities
+                </Typography>
+                <ul>
+                  {job.responsibilities.map((item, index) => (
+                    <li key={index}>
+                      <Typography variant="body1">{item}</Typography>
+                    </li>
+                  ))}
+                </ul>
+              </Box>
+            )}
 
             <Box mb={4}>
               <Typography variant="h5" gutterBottom>
                 Requirements
               </Typography>
               <ul>
-                {job.requirements.map((item: string, index: number) => (
+                {job.requirements.map((item, index) => (
                   <li key={index}>
                     <Typography variant="body1">{item}</Typography>
                   </li>
@@ -192,7 +189,7 @@ const JobDetailsPage: React.FC = () => {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid>
             <Paper elevation={2} sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Job Overview
@@ -250,7 +247,7 @@ const JobDetailsPage: React.FC = () => {
         </Grid>
       </Paper>
     </Container>
-  )
-}
+  );
+};
 
-export default JobDetailsPage
+export default JobDetailsPage;

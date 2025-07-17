@@ -1,254 +1,341 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
-import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Grid,
-  MenuItem,
-  Divider,
+import { useState } from 'react';
+import { 
+  Box, 
+  Button, 
+  TextField, 
+  Typography, 
+  MenuItem, 
   Chip,
-} from '@mui/material'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { useJobStore } from '../store/jobStore'
+  Grid
+} from '@mui/material';
+import { useJobStore } from '../stores/jobStore';
 
-const PostJobPage: React.FC = () => {
-  const navigate = useNavigate()
-  const { addJob } = useJobStore()
+// Define proper Job type with all required fields
+type JobType = 'full-time' | 'part-time' | 'contract' | 'remote';
+type ExperienceLevel = 'entry-level' | 'mid-level' | 'senior';
+type SalaryCurrency = 'USD' | 'EUR' | 'GBP' | 'JPY' | 'CAD';
 
-  const validationSchema = Yup.object({
-    title: Yup.string().required('Job title is required'),
-    company: Yup.string().required('Company name is required'),
-    location: Yup.string().required('Location is required'),
-    salary: Yup.number().required('Salary is required').min(0),
-    type: Yup.string().required('Job type is required'),
-    description: Yup.string().required('Description is required'),
-    requirements: Yup.array().min(1, 'At least one requirement is required'),
-  })
-
-  const formik = useFormik({
-    initialValues: {
-      title: '',
-      company: '',
-      location: '',
-      salary: 0,
-      type: 'full-time',
-      description: '',
-      requirements: [] as string[],
-      newRequirement: '',
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      const jobData = {
-        title: values.title,
-        company: values.company,
-        location: values.location,
-        salary: values.salary,
-        type: values.type as 'full-time' | 'part-time' | 'contract' | 'remote',
-        description: values.description,
-        requirements: values.requirements,
-      }
-      addJob(jobData)
-      navigate('/employer/dashboard')
-    },
-  })
-
-  const handleAddRequirement = () => {
-    if (formik.values.newRequirement.trim()) {
-      formik.setFieldValue('requirements', [
-        ...formik.values.requirements,
-        formik.values.newRequirement.trim(),
-      ])
-      formik.setFieldValue('newRequirement', '')
-    }
-  }
-
-  const handleRemoveRequirement = (index: number) => {
-    const newRequirements = [...formik.values.requirements]
-    newRequirements.splice(index, 1)
-    formik.setFieldValue('requirements', newRequirements)
-  }
-
-  return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Post a New Job
-      </Typography>
-
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <form onSubmit={formik.handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                id="title"
-                name="title"
-                label="Job Title"
-                value={formik.values.title}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.title && Boolean(formik.errors.title)}
-                helperText={formik.touched.title && formik.errors.title}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                id="company"
-                name="company"
-                label="Company Name"
-                value={formik.values.company}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.company && Boolean(formik.errors.company)}
-                helperText={formik.touched.company && formik.errors.company}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                id="location"
-                name="location"
-                label="Location"
-                value={formik.values.location}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.location && Boolean(formik.errors.location)}
-                helperText={formik.touched.location && formik.errors.location}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                id="salary"
-                name="salary"
-                label="Salary"
-                type="number"
-                value={formik.values.salary}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.salary && Boolean(formik.errors.salary)}
-                helperText={formik.touched.salary && formik.errors.salary}
-                InputProps={{
-                  startAdornment: '$',
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                id="type"
-                name="type"
-                label="Job Type"
-                select
-                value={formik.values.type}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.type && Boolean(formik.errors.type)}
-                helperText={formik.touched.type && formik.errors.type}
-              >
-                <MenuItem value="full-time">Full-time</MenuItem>
-                <MenuItem value="part-time">Part-time</MenuItem>
-                <MenuItem value="contract">Contract</MenuItem>
-                <MenuItem value="remote">Remote</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                id="description"
-                name="description"
-                label="Job Description"
-                multiline
-                rows={6}
-                value={formik.values.description}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.description && Boolean(formik.errors.description)}
-                helperText={formik.touched.description && formik.errors.description}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box mb={2}>
-                <Typography variant="subtitle1" gutterBottom>
-                  Requirements
-                </Typography>
-                <Box display="flex" gap={1} mb={1} flexWrap="wrap">
-                  {formik.values.requirements.map((req, index) => (
-                    <Chip
-                      key={index}
-                      label={req}
-                      onDelete={() => handleRemoveRequirement(index)}
-                    />
-                  ))}
-                </Box>
-                {formik.touched.requirements && formik.errors.requirements && (
-                  <Typography color="error" variant="body2">
-                    {formik.errors.requirements}
-                  </Typography>
-                )}
-              </Box>
-
-              <Box display="flex" gap={1}>
-                <TextField
-                  fullWidth
-                  id="newRequirement"
-                  name="newRequirement"
-                  label="Add Requirement"
-                  value={formik.values.newRequirement}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleAddRequirement()
-                    }
-                  }}
-                />
-                <Button
-                  variant="outlined"
-                  onClick={handleAddRequirement}
-                >
-                  Add
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Divider sx={{ my: 4 }} />
-
-          <Box display="flex" justifyContent="flex-end" gap={2}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate('/employer/dashboard')}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Post Job
-            </Button>
-          </Box>
-        </form>
-      </Paper>
-    </Container>
-  )
+interface Job {
+  id?: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: number;
+  salaryCurrency: SalaryCurrency;
+  type: JobType;
+  description: string;
+  requirements: string[];
+  postedAt?: Date;
+  status?: string;
+  remote: boolean;
+  experienceLevel: ExperienceLevel;
+  companyId: string;
+  benefits: string[];
+  skillsRequired: string[];
+  applicationDeadline?: Date;
 }
 
-export default PostJobPage
+export default function PostJobPage() {
+  // Initialize with all required fields
+  const [job, setJob] = useState<Omit<Job, 'id' | 'postedAt' | 'status' | 'applicationDeadline'>>({
+    title: '',
+    company: '',
+    location: '',
+    salary: 0,
+    salaryCurrency: 'USD',
+    type: 'full-time',
+    description: '',
+    requirements: [],
+    remote: false,
+    experienceLevel: 'mid-level',
+    companyId: 'comp-123', // Should come from auth context
+    benefits: [],
+    skillsRequired: []
+  });
+
+  const [requirement, setRequirement] = useState('');
+  const [benefit, setBenefit] = useState('');
+  const [skill, setSkill] = useState('');
+  const { addJob } = useJobStore();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addJob({
+      ...job,
+      id: Date.now().toString(),
+      postedAt: new Date(),
+      status: 'active'
+    } as Job);
+  };
+
+  const addRequirement = () => {
+    if (requirement.trim()) {
+      setJob(prev => ({
+        ...prev,
+        requirements: [...prev.requirements, requirement]
+      }));
+      setRequirement('');
+    }
+  };
+
+  const addBenefit = () => {
+    if (benefit.trim()) {
+      setJob(prev => ({
+        ...prev,
+        benefits: [...prev.benefits, benefit]
+      }));
+      setBenefit('');
+    }
+  };
+
+  const addSkill = () => {
+    if (skill.trim()) {
+      setJob(prev => ({
+        ...prev,
+        skillsRequired: [...prev.skillsRequired, skill]
+      }));
+      setSkill('');
+    }
+  };
+
+  const removeItem = (key: 'requirements' | 'benefits' | 'skillsRequired', index: number) => {
+    setJob(prev => ({
+      ...prev,
+      [key]: prev[key].filter((_, i) => i !== index)
+    }));
+  };
+
+  return (
+    <Box component="form" onSubmit={handleSubmit} sx={{ p: 4 }}>
+      <Typography variant="h4" gutterBottom>Post a New Job</Typography>
+      
+      <Grid container spacing={3} columns={{ xs: 12, md: 12 }}>
+        {/* Title */}
+        <Grid>
+          <TextField
+            fullWidth
+            label="Job Title"
+            value={job.title}
+            onChange={(e) => setJob({...job, title: e.target.value})}
+            required
+          />
+        </Grid>
+
+        {/* Company */}
+        <Grid>
+          <TextField
+            fullWidth
+            label="Company"
+            value={job.company}
+            onChange={(e) => setJob({...job, company: e.target.value})}
+            required
+          />
+        </Grid>
+
+        {/* Location */}
+        <Grid>
+          <TextField
+            fullWidth
+            label="Location"
+            value={job.location}
+            onChange={(e) => setJob({...job, location: e.target.value})}
+            required
+          />
+        </Grid>
+
+        {/* Remote */}
+        <Grid>
+          <TextField
+            select
+            fullWidth
+            label="Remote"
+            value={job.remote ? 'yes' : 'no'}
+            onChange={(e) => setJob({...job, remote: e.target.value === 'yes'})}
+            required
+          >
+            <MenuItem value="yes">Yes</MenuItem>
+            <MenuItem value="no">No</MenuItem>
+          </TextField>
+        </Grid>
+
+        {/* Salary */}
+        <Grid>
+          <TextField
+            fullWidth
+            label="Salary"
+            type="number"
+            value={job.salary}
+            onChange={(e) => setJob({...job, salary: Number(e.target.value)})}
+            required
+          />
+        </Grid>
+
+        {/* Salary Currency */}
+        <Grid>
+          <TextField
+            select
+            fullWidth
+            label="Currency"
+            value={job.salaryCurrency}
+            onChange={(e) => setJob({...job, salaryCurrency: e.target.value as SalaryCurrency})}
+            required
+          >
+            <MenuItem value="USD">USD ($)</MenuItem>
+            <MenuItem value="EUR">EUR (€)</MenuItem>
+            <MenuItem value="GBP">GBP (£)</MenuItem>
+            <MenuItem value="JPY">JPY (¥)</MenuItem>
+            <MenuItem value="CAD">CAD ($)</MenuItem>
+          </TextField>
+        </Grid>
+
+        {/* Job Type */}
+        <Grid>
+          <TextField
+            select
+            fullWidth
+            label="Job Type"
+            value={job.type}
+            onChange={(e) => setJob({...job, type: e.target.value as JobType})}
+            required
+          >
+            <MenuItem value="full-time">Full-time</MenuItem>
+            <MenuItem value="part-time">Part-time</MenuItem>
+            <MenuItem value="contract">Contract</MenuItem>
+            <MenuItem value="remote">Remote</MenuItem>
+          </TextField>
+        </Grid>
+
+        {/* Experience Level */}
+        <Grid>
+          <TextField
+            select
+            fullWidth
+            label="Experience Level"
+            value={job.experienceLevel}
+            onChange={(e) => setJob({...job, experienceLevel: e.target.value as ExperienceLevel})}
+            required
+          >
+            <MenuItem value="entry-level">Entry Level</MenuItem>
+            <MenuItem value="mid-level">Mid Level</MenuItem>
+            <MenuItem value="senior">Senior</MenuItem>
+          </TextField>
+        </Grid>
+
+        {/* Description */}
+        <Grid>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Job Description"
+            value={job.description}
+            onChange={(e) => setJob({...job, description: e.target.value})}
+            required
+          />
+        </Grid>
+
+        {/* Requirements */}
+        <Grid>
+          <Typography variant="h6" gutterBottom>Requirements</Typography>
+          <Box sx={{ mb: 2 }}>
+            {job.requirements.map((req, index) => (
+              <Chip
+                key={index}
+                label={req}
+                onDelete={() => removeItem('requirements', index)}
+                sx={{ mr: 1, mb: 1 }}
+              />
+            ))}
+          </Box>
+          <Box display="flex" gap={2}>
+            <TextField
+              fullWidth
+              label="Add Requirement"
+              value={requirement}
+              onChange={(e) => setRequirement(e.target.value)}
+            />
+            <Button 
+              variant="contained" 
+              onClick={addRequirement}
+              disabled={!requirement.trim()}
+            >
+              Add
+            </Button>
+          </Box>
+        </Grid>
+
+        {/* Benefits */}
+        <Grid>
+          <Typography variant="h6" gutterBottom>Benefits</Typography>
+          <Box sx={{ mb: 2 }}>
+            {job.benefits.map((benefit, index) => (
+              <Chip
+                key={index}
+                label={benefit}
+                onDelete={() => removeItem('benefits', index)}
+                sx={{ mr: 1, mb: 1 }}
+              />
+            ))}
+          </Box>
+          <Box display="flex" gap={2}>
+            <TextField
+              fullWidth
+              label="Add Benefit"
+              value={benefit}
+              onChange={(e) => setBenefit(e.target.value)}
+            />
+            <Button 
+              variant="contained" 
+              onClick={addBenefit}
+              disabled={!benefit.trim()}
+            >
+              Add
+            </Button>
+          </Box>
+        </Grid>
+
+        {/* Skills */}
+        <Grid >
+          <Typography variant="h6" gutterBottom>Skills Required</Typography>
+          <Box sx={{ mb: 2 }}>
+            {job.skillsRequired.map((skill, index) => (
+              <Chip
+                key={index}
+                label={skill}
+                onDelete={() => removeItem('skillsRequired', index)}
+                sx={{ mr: 1, mb: 1 }}
+              />
+            ))}
+          </Box>
+          <Box display="flex" gap={2}>
+            <TextField
+              fullWidth
+              label="Add Skill"
+              value={skill}
+              onChange={(e) => setSkill(e.target.value)}
+            />
+            <Button 
+              variant="contained" 
+              onClick={addSkill}
+              disabled={!skill.trim()}
+            >
+              Add
+            </Button>
+          </Box>
+        </Grid>
+
+        {/* Submit Button */}
+        <Grid >
+          <Button 
+            type="submit" 
+            variant="contained" 
+            size="large"
+            fullWidth
+          >
+            Post Job
+          </Button>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}

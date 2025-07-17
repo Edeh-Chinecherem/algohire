@@ -20,6 +20,7 @@ const EmployerDashboardPage: React.FC = () => {
   const [tabValue, setTabValue] = React.useState(0)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    event.preventDefault()
     setTabValue(newValue)
   }
 
@@ -37,8 +38,8 @@ const EmployerDashboardPage: React.FC = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+      <Grid container spacing={4} columns={{ xs: 12, sm: 12, md: 12 }}>
+        <Grid>
           <Paper sx={{ p: 3 }}>
             <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
               <Avatar
@@ -82,7 +83,7 @@ const EmployerDashboardPage: React.FC = () => {
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={9}>
+        <Grid>
           <Paper sx={{ p: 3 }}>
             <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
               <Tab label="My Jobs" />

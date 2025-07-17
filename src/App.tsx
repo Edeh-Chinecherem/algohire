@@ -1,11 +1,11 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-// import HomePage from './pages/HomePage'
+import HomePage from './pages/HomePage'
 import JobsPage from './pages/JobPage'
 import JobDetailsPage from './pages/JobDetailsPage'
 import AuthPage from './pages/AuthPage'
-// import NotFoundPage from './pages/NotFoundPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 const theme = createTheme({
   palette: {
@@ -30,11 +30,11 @@ function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Layout />}>
-          {/* <Route index element={<HomePage />} /> */}
+          <Route index element={<HomePage />} />
           <Route path="jobs" element={<JobsPage />} />
           <Route path="jobs/:id" element={<JobDetailsPage />} />
           <Route path="auth/:type" element={<AuthPage />} />
-          {/* <Route path="*" element={<NotFoundPage />} /> */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </ThemeProvider>

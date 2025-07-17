@@ -1,20 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-
-type JobType = 'full-time' | 'part-time' | 'contract' | 'remote'
-
-interface Job {
-  id: string
-  title: string
-  company: string
-  location: string
-  salary: number
-  type: JobType
-  postedAt: string
-  description: string
-  requirements: string[]
-  companyLogo?: string
-}
+import type { Job, JobType } from '../types/types'
 
 interface JobState {
   jobs: Job[]
@@ -26,6 +12,8 @@ interface JobState {
     location: string
     salaryRange: [number, number]
     jobType: JobType[]
+    remote?: boolean
+    experienceLevel?: string[]
   }
   setJobs: (jobs: Job[]) => void
   setFilters: (filters: Partial<JobState['filters']>) => void
@@ -33,13 +21,13 @@ interface JobState {
   unsaveJob: (jobId: string) => void
   applyToJob: (jobId: string) => void
   resetFilters: () => void
-  addJob: (job: Omit<Job, 'id' | 'postedAt'>) => void
+  addJob: (job: Omit<Job, 'id' | 'postedAt' | 'status'>) => void
 }
 
 export const useJobStore = create<JobState>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set) => ({  // Removed unused 'get' parameter here
         jobs: [],
         filteredJobs: [],
         savedJobs: [],
@@ -49,6 +37,8 @@ export const useJobStore = create<JobState>()(
           location: '',
           salaryRange: [0, 200000],
           jobType: [],
+          remote: undefined,
+          experienceLevel: undefined
         },
         setJobs: (jobs) => set({ jobs, filteredJobs: jobs }),
         setFilters: (filters) =>
@@ -72,7 +62,16 @@ export const useJobStore = create<JobState>()(
                 ? newFilters.jobType.includes(job.type)
                 : true
 
-              return matchesSearch && matchesLocation && matchesSalary && matchesJobType
+              const matchesRemote = typeof newFilters.remote === 'boolean'
+                ? job.remote === newFilters.remote
+                : true
+
+              const matchesExperience = newFilters.experienceLevel?.length
+                ? newFilters.experienceLevel.includes(job.experienceLevel)
+                : true
+
+              return matchesSearch && matchesLocation && matchesSalary && 
+                     matchesJobType && matchesRemote && matchesExperience
             })
             return { filters: newFilters, filteredJobs }
           }),
@@ -99,6 +98,8 @@ export const useJobStore = create<JobState>()(
               location: '',
               salaryRange: [0, 200000],
               jobType: [],
+              remote: undefined,
+              experienceLevel: undefined
             },
             filteredJobs: state.jobs,
           })),
@@ -108,6 +109,12 @@ export const useJobStore = create<JobState>()(
               ...job,
               id: Math.random().toString(36).substring(2, 9),
               postedAt: new Date().toISOString(),
+              status: 'active',
+              applicantsCount: 0,
+              viewsCount: 0,
+              skills: job.skills || [],
+              benefits: job.benefits || [],
+              responsibilities: job.responsibilities || []
             }
             return { jobs: [...state.jobs, newJob], filteredJobs: [...state.filteredJobs, newJob] }
           }),
