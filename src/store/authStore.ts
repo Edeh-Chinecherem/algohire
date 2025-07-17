@@ -9,12 +9,18 @@ interface User {
   avatar?: string
 }
 
+interface AuthError {
+  message: string
+  code?: number
+}
+
 interface AuthState {
   user: User | null
   token: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  error: string | null
+  error: AuthError | null
   login: (email: string, password: string) => Promise<void>
   register: (userData: {
     name: string
@@ -23,8 +29,12 @@ interface AuthState {
     role: 'candidate' | 'employer'
   }) => Promise<void>
   logout: () => void
+  refreshAuthToken: () => Promise<void>
+  updateUser: (updates: Partial<User>) => void
+  requestPasswordReset: (email: string) => Promise<void>
+  resetPassword: (token: string, newPassword: string) => Promise<void>
   setLoading: (isLoading: boolean) => void
-  setError: (error: string | null) => void
+  setError: (error: AuthError | null) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -33,16 +43,17 @@ export const useAuthStore = create<AuthState>()(
       (set) => ({
         user: null,
         token: null,
+        refreshToken: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
+        
         login: async (email, password) => {
           set({ isLoading: true, error: null })
           try {
-            // Mock API call - replace with actual API
+            // Replace with actual API call
             await new Promise((resolve) => setTimeout(resolve, 1000))
             
-            // Mock response
             const mockUser: User = {
               id: '1',
               name: 'John Doe',
@@ -53,21 +64,26 @@ export const useAuthStore = create<AuthState>()(
             
             set({
               user: mockUser,
-              token: 'mock-token',
+              token: 'mock-access-token',
+              refreshToken: 'mock-refresh-token',
               isAuthenticated: true,
               isLoading: false,
             })
           } catch (error) {
             set({
-              error: 'Invalid email or password',
+              error: { 
+                message: 'Invalid email or password',
+                code: 401
+              },
               isLoading: false,
             })
+            throw error
           }
         },
+
         register: async (userData) => {
           set({ isLoading: true, error: null })
           try {
-            // Mock API call
             await new Promise((resolve) => setTimeout(resolve, 1000))
             
             const mockUser: User = {
@@ -75,29 +91,99 @@ export const useAuthStore = create<AuthState>()(
               name: userData.name,
               email: userData.email,
               role: userData.role,
-              avatar: `https://randomuser.me/api/portraits/${userData.role === 'candidate' ? 'men' : 'women'}/2.jpg`,
+              avatar: `https://randomuser.me/api/portraits/${
+                userData.role === 'candidate' ? 'men' : 'women'
+              }/2.jpg`,
             }
             
             set({
               user: mockUser,
-              token: 'mock-token',
+              token: 'mock-access-token',
+              refreshToken: 'mock-refresh-token',
               isAuthenticated: true,
               isLoading: false,
             })
           } catch (error) {
             set({
-              error: 'Registration failed',
+              error: { 
+                message: 'Registration failed', 
+                code: 400 
+              },
               isLoading: false,
             })
+            throw error
           }
         },
+
         logout: () => {
           set({
             user: null,
             token: null,
+            refreshToken: null,
             isAuthenticated: false,
           })
         },
+
+        refreshAuthToken: async () => {
+          set({ isLoading: true })
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 500))
+            set({
+              token: 'new-mock-access-token',
+              isLoading: false,
+            })
+          } catch (error) {
+            set({
+              error: { 
+                message: 'Session expired. Please login again.',
+                code: 403
+              },
+              isLoading: false,
+            })
+            throw error
+          }
+        },
+
+        updateUser: (updates) => {
+          set((state) => ({
+            user: state.user ? { ...state.user, ...updates } : null
+          }))
+        },
+
+        requestPasswordReset: async (email) => {
+          set({ isLoading: true, error: null })
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 500))
+            set({ isLoading: false })
+          } catch (error) {
+            set({
+              error: { 
+                message: 'Failed to request password reset',
+                code: 400
+              },
+              isLoading: false,
+            })
+            throw error
+          }
+        },
+
+        resetPassword: async (token, newPassword) => {
+          set({ isLoading: true, error: null })
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 500))
+            set({ isLoading: false })
+          } catch (error) {
+            set({
+              error: { 
+                message: 'Password reset failed',
+                code: 400
+              },
+              isLoading: false,
+            })
+            throw error
+          }
+        },
+
         setLoading: (isLoading) => set({ isLoading }),
         setError: (error) => set({ error }),
       }),
@@ -106,6 +192,7 @@ export const useAuthStore = create<AuthState>()(
         partialize: (state) => ({
           user: state.user,
           token: state.token,
+          refreshToken: state.refreshToken,
           isAuthenticated: state.isAuthenticated,
         }),
       }

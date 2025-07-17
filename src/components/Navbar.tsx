@@ -8,21 +8,31 @@ import {
   Menu,
   MenuItem,
   Box,
-} from '@mui/material'
-import { Menu as MenuIcon, Search as SearchIcon } from '@mui/icons-material'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+} from '@mui/material';
+import { Menu as MenuIcon, Search as SearchIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
+
+  // Explicit navigation functions
+  const handleLogin = () => {
+    navigate('/auth/login');
+  };
+
+  const handleRegister = () => {
+    navigate('/auth/register');
+  };
 
   return (
     <AppBar position="fixed">
@@ -53,12 +63,11 @@ const Navbar = () => {
         <IconButton size="large" color="inherit">
           <SearchIcon />
         </IconButton>
-        <Button component={Link} to="/auth/login" color="inherit">
+        <Button onClick={handleLogin} color="inherit">
           Login
         </Button>
         <Button
-          component={Link}
-          to="/auth/register"
+          onClick={handleRegister}
           variant="contained"
           color="secondary"
           sx={{ ml: 1 }}
@@ -79,7 +88,7 @@ const Navbar = () => {
         </Menu>
       </Toolbar>
     </AppBar>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

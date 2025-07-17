@@ -62,16 +62,18 @@ const HomePage: React.FC = () => {
       {/* Hero Section */}
       <Box
         sx={{
+          width: '100vw',
           background: theme.palette.mode === 'dark'
             ? 'linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%)'
             : 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
           color: 'white',
           py: 10,
           px: 2,
-          textAlign: 'center'
+          textAlign: 'center',
+          
         }}
       >
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
             Find Your Dream Tech Job
           </Typography>

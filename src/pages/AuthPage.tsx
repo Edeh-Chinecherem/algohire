@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import {
@@ -8,27 +8,30 @@ import {
   Typography,
   TextField,
   Button,
-  Link,
   Box,
   CircularProgress,
   Alert,
   Divider,
+  Link
 } from '@mui/material'
 import { useAuthStore } from '../store/authStore'
 
 const AuthPage: React.FC = () => {
-  const { type } = useParams()
+  const { type } = useParams<{ type: string }>()
   const navigate = useNavigate()
   const { user, isAuthenticated, isLoading, error, login, register, setError } = useAuthStore()
+  const [initialLoad, setInitialLoad] = useState(true)
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      navigate(user.role === 'employer' ? '/employer/dashboard' : '/')
+    if (!initialLoad && isAuthenticated && user) {
+      navigate(user.role === 'employer' ? '/employer/dashboard' : '/', { replace: true })
     }
+    setInitialLoad(false)
   }, [isAuthenticated, user, navigate])
 
   useEffect(() => {
     setError(null)
+    formik.resetForm()
   }, [type, setError])
 
   const isLogin = type === 'login'
@@ -38,14 +41,12 @@ const AuthPage: React.FC = () => {
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Required'),
-    ...(isLogin
-      ? {}
-      : {
-          name: Yup.string().required('Required'),
-          confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password')], 'Passwords must match')
-            .required('Required'),
-        }),
+    ...(!isLogin && {
+      name: Yup.string().required('Required'),
+      confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password')], 'Passwords must match')
+        .required('Required')
+    })
   })
 
   const formik = useFormik({
@@ -57,15 +58,19 @@ const AuthPage: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      if (isLogin) {
-        await login(values.email, values.password)
-      } else {
-        await register({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-          role: 'candidate',
-        })
+      try {
+        if (isLogin) {
+          await login(values.email, values.password)
+        } else {
+          await register({
+            name: values.name,
+            email: values.email,
+            password: values.password,
+            role: 'candidate',
+          })
+        }
+      } catch (err) {
+        // Error handling is already done in the store
       }
     },
   })
@@ -79,7 +84,7 @@ const AuthPage: React.FC = () => {
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
+            {error.message}
           </Alert>
         )}
 
@@ -167,7 +172,8 @@ const AuthPage: React.FC = () => {
           <Typography variant="body2">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <Link
-              href={`/auth/${isLogin ? 'register' : 'login'}`}
+              component={RouterLink}
+              to={`/auth/${isLogin ? 'register' : 'login'}`}
               underline="hover"
             >
               {isLogin ? 'Register here' : 'Login here'}
@@ -177,7 +183,7 @@ const AuthPage: React.FC = () => {
 
         {isLogin && (
           <Box textAlign="center" mt={2}>
-            <Link href="/auth/forgot-password" underline="hover">
+            <Link component={RouterLink} to="/auth/forgot-password" underline="hover">
               Forgot password?
             </Link>
           </Box>
