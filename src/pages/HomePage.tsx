@@ -208,7 +208,7 @@ const HomePage: React.FC = () => {
             align="center" 
             gutterBottom
           >
-            How Algohire Works
+            How HireAlt Works
           </Typography>
           <Box sx={{
             display: 'grid',
@@ -292,7 +292,7 @@ const HomePage: React.FC = () => {
             variant={isMobile ? 'body2' : 'body1'} 
             sx={{ mb: 4 }}
           >
-            Join thousands of developers who found their dream jobs through Algohire
+            Join thousands of developers who found their dream jobs through HireAlt
           </Typography>
           <Button
             variant="contained"

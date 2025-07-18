@@ -56,7 +56,7 @@ const Navbar = () => {
           to="/"
           sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
         >
-          Algohire
+          HireAlt
         </Typography>
         <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
           <Button component={Link} to="/jobs" color="inherit">

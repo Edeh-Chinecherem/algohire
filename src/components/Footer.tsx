@@ -19,10 +19,10 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   const socialLinks = [
-    { icon: <GitHub />, url: "https://github.com/algohire" },
-    { icon: <LinkedIn />, url: "https://linkedin.com/company/algohire" },
-    { icon: <Twitter />, url: "https://twitter.com/algohire" },
-    { icon: <Email />, url: "mailto:contact@algohire.com" }
+    { icon: <GitHub />, url: "https://github.com/hirealt" },
+    { icon: <LinkedIn />, url: "https://linkedin.com/company/hirealt" },
+    { icon: <Twitter />, url: "https://twitter.com/hirealt" },
+    { icon: <Email />, url: "mailto:contact@hirealt.com" }
   ];
 
   const footerLinks = [
@@ -92,7 +92,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <Typography variant="body2" color="text.secondary">
-          © {currentYear} Algohire. All rights reserved.
+          © {currentYear} HireAlt. All rights reserved.
         </Typography>
 
         {/* Optional: Additional info */}
