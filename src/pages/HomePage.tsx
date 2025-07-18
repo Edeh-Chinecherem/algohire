@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Container,
-  Grid,
   Paper,
   Typography,
   useTheme,
@@ -15,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import JobCard from '../components/JobCard';
 import { useJobStore } from '../store/jobStore';
 import { SearchBar } from '../components/SearchBar';
-
 
 const HomePage: React.FC = () => {
   const theme = useTheme();
@@ -29,10 +27,8 @@ const HomePage: React.FC = () => {
     applyToJob 
   } = useJobStore();
 
-  // Create properly typed featured jobs
   const featuredJobs = filteredJobs.slice(0, 4).map(job => ({
     ...job,
-    // Ensure all required Job properties are present
     companyId: job.companyId || '',
     remote: job.remote || false,
     salaryCurrency: job.salaryCurrency || 'USD',
@@ -58,88 +54,172 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      {/* Hero Section */}
+    <Box sx={{ width: '100vw', overflowX: 'hidden' }}>
+      {/* Hero Section - Full width */}
       <Box
         sx={{
           width: '100vw',
+          minHeight: '60vh',
           background: theme.palette.mode === 'dark'
             ? 'linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%)'
             : 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
           color: 'white',
-          py: 10,
-          px: 2,
-          textAlign: 'center',
-          
+          py: { xs: 8, md: 12 },
+          px: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+        <Box sx={{ width: '100%', maxWidth: 'lg', px: { xs: 2, sm: 4 } }}>
+          <Typography 
+            variant={isMobile ? 'h3' : 'h2'} 
+            component="h1" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 700,
+              textAlign: 'center',
+              maxWidth: 800,
+              mx: 'auto'
+            }}
+          >
             Find Your Dream Tech Job
           </Typography>
-          <Typography variant="h5" component="p" gutterBottom sx={{ mb: 4 }}>
+          <Typography 
+            variant={isMobile ? 'body1' : 'h5'} 
+            component="p" 
+            gutterBottom 
+            sx={{ 
+              mb: 4,
+              textAlign: 'center',
+              maxWidth: 800,
+              mx: 'auto'
+            }}
+          >
             Join thousands of companies and developers using Algohire to connect
           </Typography>
           
-          <SearchBar />
+          <Box sx={{ 
+            maxWidth: 800,
+            mx: 'auto',
+            px: { xs: 0, sm: 2 }
+          }}>
+            <SearchBar />
+          </Box>
 
           <Stack
             direction="row"
             spacing={1}
             justifyContent="center"
             flexWrap="wrap"
-            sx={{ mt: 3 }}
+            sx={{ 
+              mt: 4,
+              px: { xs: 1, sm: 0 }
+            }}
           >
             {popularCategories.slice(0, isMobile ? 4 : 8).map((category) => (
               <Chip
                 key={category}
                 label={category}
                 clickable
-                sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.2)', mb: 1 }}
+                sx={{ 
+                  color: 'white', 
+                  bgcolor: 'rgba(255,255,255,0.2)', 
+                  m: 0.5,
+                  fontSize: isMobile ? '0.75rem' : '0.875rem'
+                }}
               />
             ))}
           </Stack>
+        </Box>
+      </Box>
+
+      {/* Featured Jobs Section - Full width with constrained content */}
+      <Box sx={{ 
+        width: '100vw',
+        py: { xs: 4, md: 8 },
+        px: 0,
+        bgcolor: 'background.default'
+      }}>
+        <Container maxWidth={false} sx={{ 
+          maxWidth: 'lg',
+          px: { xs: 2, sm: 4 }
+        }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between', 
+            alignItems: { xs: 'flex-start', sm: 'center' }, 
+            mb: 4,
+            gap: 2
+          }}>
+            <Typography variant={isMobile ? 'h5' : 'h4'} component="h2">
+              Featured Jobs
+            </Typography>
+            <Button
+              variant="outlined"
+              onClick={() => navigate('/jobs')}
+              size={isMobile ? 'small' : 'medium'}
+            >
+              View All Jobs
+            </Button>
+          </Box>
+
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(4, 1fr)'
+            },
+            gap: 3,
+            width: '100%'
+          }}>
+            {featuredJobs.map((job) => (
+              <Box key={job.id} sx={{ width: '100%' }}>
+                <JobCard 
+                  job={job}
+                  variant="featured"
+                  isSaved={savedJobs.some(j => j.id === job.id)}
+                  onSave={() => saveJob(job.id)}
+                  onUnsave={() => unsaveJob(job.id)}
+                  onApply={() => applyToJob(job.id)}
+                />
+              </Box>
+            ))}
+          </Box>
         </Container>
       </Box>
 
-      {/* Featured Jobs Section */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-          <Typography variant="h4" component="h2">
-            Featured Jobs
-          </Typography>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/jobs')}
-            size={isMobile ? 'small' : 'medium'}
+      {/* How It Works Section - Full width */}
+      <Box sx={{ 
+        width: '100vw',
+        py: { xs: 6, md: 10 },
+        px: 0,
+        bgcolor: 'background.paper'
+      }}>
+        <Container maxWidth={false} sx={{ 
+          maxWidth: 'lg',
+          px: { xs: 2, sm: 4 }
+        }}>
+          <Typography 
+            variant={isMobile ? 'h5' : 'h4'} 
+            component="h2" 
+            align="center" 
+            gutterBottom
           >
-            View All Jobs
-          </Button>
-        </Box>
-
-        <Grid container spacing={3} columns={{ xs: 4, sm: 8, md: 12 }}>
-          {featuredJobs.map((job) => (
-            <Grid key={job.id}>
-              <JobCard 
-                job={job}
-                variant="featured"
-                isSaved={savedJobs.some(j => j.id === job.id)}
-                onSave={() => saveJob(job.id)}
-                onUnsave={() => unsaveJob(job.id)}
-                onApply={() => applyToJob(job.id)}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
-      {/* How It Works Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: 6 }}>
-        <Container maxWidth="lg">
-          <Typography variant="h4" component="h2" align="center" gutterBottom>
             How Algohire Works
           </Typography>
-          <Grid container spacing={4} sx={{ mt: 2 }}>
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(4, 1fr)'
+            },
+            gap: 3,
+            mt: 4
+          }}>
             {[
               {
                 title: 'Create Profile',
@@ -162,36 +242,61 @@ const HomePage: React.FC = () => {
                 icon: '💼'
               }
             ].map((item, index) => (
-              <Grid   key={index}>
-                <Paper elevation={0} sx={{ p: 3, height: '100%', textAlign: 'center' }}>
-                  <Typography variant="h3" sx={{ mb: 2 }}>
-                    {item.icon}
-                  </Typography>
-                  <Typography variant="h6" gutterBottom>
-                    {item.title}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {item.description}
-                  </Typography>
-                </Paper>
-              </Grid>
+              <Paper 
+                key={index} 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  height: '100%', 
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center'
+                }}
+              >
+                <Typography variant="h3" sx={{ mb: 2 }}>
+                  {item.icon}
+                </Typography>
+                <Typography variant={isMobile ? 'subtitle1' : 'h6'} gutterBottom>
+                  {item.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {item.description}
+                </Typography>
+              </Paper>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
-      {/* Call to Action */}
-      <Box sx={{ py: 8, textAlign: 'center' }}>
-        <Container maxWidth="md">
-          <Typography variant="h4" component="h2" gutterBottom>
+      {/* Call to Action - Full width */}
+      <Box sx={{ 
+        width: '100vw',
+        py: { xs: 8, md: 12 },
+        px: 0,
+        bgcolor: 'background.default',
+        textAlign: 'center'
+      }}>
+        <Container maxWidth={false} sx={{ 
+          maxWidth: 'md',
+          px: { xs: 2, sm: 4 }
+        }}>
+          <Typography 
+            variant={isMobile ? 'h5' : 'h4'} 
+            component="h2" 
+            gutterBottom
+          >
             Ready to take the next step in your career?
           </Typography>
-          <Typography variant="body1" sx={{ mb: 4 }}>
+          <Typography 
+            variant={isMobile ? 'body2' : 'body1'} 
+            sx={{ mb: 4 }}
+          >
             Join thousands of developers who found their dream jobs through Algohire
           </Typography>
           <Button
             variant="contained"
-            size="large"
+            size={isMobile ? 'medium' : 'large'}
             onClick={() => navigate('/auth/register')}
             sx={{ px: 6 }}
           >

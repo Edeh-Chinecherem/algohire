@@ -25,13 +25,17 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  // Explicit navigation functions
+  // Navigation functions
   const handleLogin = () => {
     navigate('/auth/login');
   };
 
   const handleRegister = () => {
     navigate('/auth/register');
+  };
+
+  const handleEmployerDashboard = () => {
+    navigate('/employer/dashboard'); // Updated to match your route
   };
 
   return (
@@ -58,7 +62,12 @@ const Navbar = () => {
           <Button component={Link} to="/jobs" color="inherit">
             Browse Jobs
           </Button>
-          <Button color="inherit">For Employers</Button>
+          <Button 
+            onClick={handleEmployerDashboard} 
+            color="inherit"
+          >
+            For Employers
+          </Button>
         </Box>
         <IconButton size="large" color="inherit">
           <SearchIcon />

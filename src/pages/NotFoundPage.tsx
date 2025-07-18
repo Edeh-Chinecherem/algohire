@@ -15,7 +15,7 @@ const NotFoundPage: React.FC = () => {
   const theme = useTheme();
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
+    <Container maxWidth="lg" sx={{ py: 8 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
         <SentimentVeryDissatisfied
           sx={{ fontSize: 80, color: theme.palette.error.main, mb: 2 }}

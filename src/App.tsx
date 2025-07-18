@@ -6,8 +6,9 @@ import JobsPage from './pages/JobPage'
 import JobDetailsPage from './pages/JobDetailsPage'
 import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
-import AuthRoute from './components/AuthRoute'; 
+// import AuthRoute from './components/AuthRoute'; 
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import EmployerDashboardPage from './pages/EmployerDashboardPage';
 
 const theme = createTheme({
   palette: {
@@ -34,11 +35,13 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
 
-          <Route element={<AuthRoute />}>
+          {/* <Route element={<AuthRoute />}> */}
+          
           <Route path="/auth/login" element={<AuthPage />} />
           <Route path="/auth/register" element={<AuthPage />} />
           <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
-        </Route>
+        {/* </Route> */}
+        <Route path="/employer/dashboard" element={<EmployerDashboardPage />} />
           <Route path="jobs" element={<JobsPage />} />
           <Route path="jobs/:id" element={<JobDetailsPage />} />
           <Route path="auth/:type" element={<AuthPage />} />
