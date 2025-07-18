@@ -18,7 +18,7 @@ import { useAuthStore } from '../store/authStore';
 const ForgotPasswordPage: React.FC = () => {
   const navigate = useNavigate();
   const [emailSent, setEmailSent] = useState(false);
-  const { isLoading, error, requestPasswordReset, setError } = useAuthStore();
+  const { isLoading, error, requestPasswordReset} = useAuthStore();
 
   const validationSchema = Yup.object({
     email: Yup.string()

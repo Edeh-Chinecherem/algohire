@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
         isLoading: false,
         error: null,
         
-        login: async (email, password) => {
+        login: async (email, /*password*/) => {
           set({ isLoading: true, error: null })
           try {
             // Replace with actual API call
@@ -150,7 +150,7 @@ export const useAuthStore = create<AuthState>()(
           }))
         },
 
-        requestPasswordReset: async (email) => {
+        requestPasswordReset: async (/*email*/) => {
           set({ isLoading: true, error: null })
           try {
             await new Promise((resolve) => setTimeout(resolve, 500))
@@ -167,7 +167,7 @@ export const useAuthStore = create<AuthState>()(
           }
         },
 
-        resetPassword: async (token, newPassword) => {
+        resetPassword: async (/*token, newPassword*/) => {
           set({ isLoading: true, error: null })
           try {
             await new Promise((resolve) => setTimeout(resolve, 500))
