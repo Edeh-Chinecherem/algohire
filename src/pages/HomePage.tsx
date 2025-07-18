@@ -96,7 +96,7 @@ const HomePage: React.FC = () => {
               mx: 'auto'
             }}
           >
-            Join thousands of companies and developers using Algohire to connect
+            Join thousands of companies and developers using HireAlt to connect
           </Typography>
           
           <Box sx={{ 
