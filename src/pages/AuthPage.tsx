@@ -18,8 +18,7 @@ const AuthPage: React.FC = () => {
     login,
     register,
     setError,
-    logout
-  } = useAuthStore();
+    } = useAuthStore();
   
   const [activeForm, setActiveForm] = useState<'login' | 'register'>(
     type === 'register' ? 'register' : 'login'
